@@ -31,7 +31,7 @@
 #include "fastio.h"
 #include "watchdog.h"
 
-#include "timers.h"
+#include "../HAL_STM32/timers.h"
 
 #include "../../inc/MarlinConfigPre.h"
 

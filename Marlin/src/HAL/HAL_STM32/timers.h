@@ -71,14 +71,6 @@
 
 #endif
 
-#ifndef STEP_TIMER_IRQ_PRIO
-  #define STEP_TIMER_IRQ_PRIO 1
-#endif
-
-#ifndef TEMP_TIMER_IRQ_PRIO
-  #define TEMP_TIMER_IRQ_PRIO 2
-#endif
-
 #define STEP_TIMER_NUM 0  // index of timer to use for stepper
 #define TEMP_TIMER_NUM 1  // index of timer to use for temperature
 #define PULSE_TIMER_NUM STEP_TIMER_NUM
@@ -100,18 +92,6 @@
 #define STEP_TIMER_DEV _TIMER_DEV(STEP_TIMER)
 #define TEMP_TIMER_DEV _TIMER_DEV(TEMP_TIMER)
 
-#define __TIMER_CALLBACK(X) TIM##X##_IRQHandler
-#define _TIMER_CALLBACK(X) __TIMER_CALLBACK(X)
-
-#define STEP_TIMER_CALLBACK _TIMER_CALLBACK(STEP_TIMER)
-#define TEMP_TIMER_CALLBACK _TIMER_CALLBACK(TEMP_TIMER)
-
-#define __TIMER_IRQ_NAME(X) TIM##X##_IRQn
-#define _TIMER_IRQ_NAME(X) __TIMER_IRQ_NAME(X)
-
-#define STEP_TIMER_IRQ_NAME _TIMER_IRQ_NAME(STEP_TIMER)
-#define TEMP_TIMER_IRQ_NAME _TIMER_IRQ_NAME(TEMP_TIMER)
-
 #define ENABLE_STEPPER_DRIVER_INTERRUPT() HAL_timer_enable_interrupt(STEP_TIMER_NUM)
 #define DISABLE_STEPPER_DRIVER_INTERRUPT() HAL_timer_disable_interrupt(STEP_TIMER_NUM)
 #define STEPPER_ISR_ENABLED() HAL_timer_interrupt_enabled(STEP_TIMER_NUM)
@@ -119,22 +99,16 @@
 #define ENABLE_TEMPERATURE_INTERRUPT() HAL_timer_enable_interrupt(TEMP_TIMER_NUM)
 #define DISABLE_TEMPERATURE_INTERRUPT() HAL_timer_disable_interrupt(TEMP_TIMER_NUM)
 
-extern void Step_Handler(stimer_t *htim);
-extern void Temp_Handler(stimer_t *htim);
-#define HAL_STEP_TIMER_ISR() void Step_Handler(stimer_t *htim)
-#define HAL_TEMP_TIMER_ISR() void Temp_Handler(stimer_t *htim)
-
-// ------------------------
-// Types
-// ------------------------
-
-typedef stimer_t stm32_timer_t;
+extern void Step_Handler(HardwareTimer *htim);
+extern void Temp_Handler(HardwareTimer *htim);
+#define HAL_STEP_TIMER_ISR() void Step_Handler(HardwareTimer *htim)
+#define HAL_TEMP_TIMER_ISR() void Temp_Handler(HardwareTimer *htim)
 
 // ------------------------
 // Public Variables
 // ------------------------
 
-extern stm32_timer_t TimerHandle[];
+extern HardwareTimer *timer_instance[];
 
 // ------------------------
 // Public functions
@@ -145,18 +119,25 @@ void HAL_timer_enable_interrupt(const uint8_t timer_num);
 void HAL_timer_disable_interrupt(const uint8_t timer_num);
 bool HAL_timer_interrupt_enabled(const uint8_t timer_num);
 
+//made FORCE_INLINE because it's used from FORCE_INLINE (performance critical) methods
+FORCE_INLINE bool HAL_timer_initialized(const uint8_t timer_num) {
+  return timer_instance[timer_num] != NULL;
+}
 FORCE_INLINE static uint32_t HAL_timer_get_count(const uint8_t timer_num) {
-  return __HAL_TIM_GET_COUNTER(&TimerHandle[timer_num].handle);
+  return HAL_timer_initialized(timer_num) ? timer_instance[timer_num]->getCount() : 0;
 }
 
 FORCE_INLINE static void HAL_timer_set_compare(const uint8_t timer_num, const uint32_t compare) {
-  __HAL_TIM_SET_AUTORELOAD(&TimerHandle[timer_num].handle, compare);
-  if (HAL_timer_get_count(timer_num) >= compare)
-    TimerHandle[timer_num].handle.Instance->EGR |= TIM_EGR_UG; // Generate an immediate update interrupt
+  if (HAL_timer_initialized(timer_num)) {
+    timer_instance[timer_num]->setCaptureCompare(1, compare, TICK_COMPARE_FORMAT); //use channel 1
+
+    if (timer_instance[timer_num]->getCount() >= compare)
+      timer_instance[timer_num]->refresh(); // Generate an immediate update interrupt
+  }
 }
 
 FORCE_INLINE static hal_timer_t HAL_timer_get_compare(const uint8_t timer_num) {
-  return __HAL_TIM_GET_AUTORELOAD(&TimerHandle[timer_num].handle);
+  return HAL_timer_initialized(timer_num) ? timer_instance[timer_num]->getCaptureCompare(1) : 0; //use again channel 1
 }
 
 #define HAL_timer_isr_prologue(TIMER_NUM)
