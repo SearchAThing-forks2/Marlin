@@ -51,8 +51,9 @@ void HAL_timer_start(const uint8_t timer_num, const uint32_t frequency) {
       case STEP_TIMER_NUM:
         // STEPPER TIMER - use a 32bit timer if possible
         timer_instance[timer_num] = new HardwareTimer(STEP_TIMER_DEV);
-        timer_instance[timer_num]->setMode(1, TIMER_OUTPUT_COMPARE); //no pin output just interrupt
-        timer_instance[timer_num]->setOverflow(frequency, HERTZ_FORMAT);
+        //timer_instance[timer_num]->setMode(1, TIMER_OUTPUT_COMPARE); // No pin output just the interrupt
+        //timer_instance[timer_num]->setOverflow(frequency, HERTZ_FORMAT);
+        timer_instance[timer_num]->setPrescaleFactor(STEPPER_TIMER_PRESCALE);
         timer_instance[timer_num]->attachInterrupt(Step_Handler); // Called on update interruption (rollover)
         timer_instance[timer_num]->resume();
         break;
