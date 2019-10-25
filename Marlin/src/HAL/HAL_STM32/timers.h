@@ -129,14 +129,14 @@ FORCE_INLINE static uint32_t HAL_timer_get_count(const uint8_t timer_num) {
 
 FORCE_INLINE static void HAL_timer_set_compare(const uint8_t timer_num, const uint32_t compare) {
   if (HAL_timer_initialized(timer_num)) {
-    timer_instance[timer_num]->setOverflow(count);
-    if (timer_instance[timer_num]->getCount() >= compare)
-      timer_instance[timer_num]->refresh(); // Generate an immediate update interrupt
+    timer_instance[timer_num]->setOverflow(compare, TICK_FORMAT);
+    const uint32_t cnt = timer_instance[timer_num]->getCount(TICK_FORMAT);
+    if (cnt >= compare) timer_instance[timer_num]->refresh();
   }
 }
 
 FORCE_INLINE static hal_timer_t HAL_timer_get_compare(const uint8_t timer_num) {
-  return HAL_timer_initialized(timer_num) ? timer_instance[timer_num]->getOverflow() : 0;
+  return HAL_timer_initialized(timer_num) ? timer_instance[timer_num]->getOverflow(TICK_FORMAT) : 0;
 }
 
 #define HAL_timer_isr_prologue(TIMER_NUM)
