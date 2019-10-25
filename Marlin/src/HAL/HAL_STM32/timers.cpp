@@ -46,14 +46,15 @@ bool timer_enabled[NUM_HARDWARE_TIMERS] = { false };
 // 'frequency' is in Hertz
 void HAL_timer_start(const uint8_t timer_num, const uint32_t frequency) {
   if (!HAL_timer_initialized(timer_num)) {
-   //according to documentation prescale factor is computed automatically if setOverflow is in HERTZ_FORMAT
+   // According to documentation the prescale factor is computed automatically if setOverflow is in HERTZ_FORMAT
    switch (timer_num) {
       case STEP_TIMER_NUM:
         // STEPPER TIMER - use a 32bit timer if possible
         timer_instance[timer_num] = new HardwareTimer(STEP_TIMER_DEV);
         timer_instance[timer_num]->setMode(1, TIMER_OUTPUT_COMPARE); //no pin output just interrupt
         timer_instance[timer_num]->setOverflow(frequency, HERTZ_FORMAT);
-        timer_instance[timer_num]->attachInterrupt(Step_Handler); //the handler is called on update interruption (rollover)
+        timer_instance[timer_num]->attachInterrupt(Step_Handler); // Called on update interruption (rollover)
+        timer_instance[timer_num]->resume();
         break;
       case TEMP_TIMER_NUM:
         // TEMP TIMER - any available 16bit Timer
@@ -61,6 +62,7 @@ void HAL_timer_start(const uint8_t timer_num, const uint32_t frequency) {
         timer_instance[timer_num]->setMode(1, TIMER_OUTPUT_COMPARE);
         timer_instance[timer_num]->setOverflow(frequency, HERTZ_FORMAT);
         timer_instance[timer_num]->attachInterrupt(Temp_Handler);
+        timer_instance[timer_num]->resume();
         break;
     }
   }
