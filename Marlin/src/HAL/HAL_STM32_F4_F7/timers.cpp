@@ -20,7 +20,7 @@
  *
  */
 
-#if defined(ARDUINO_ARCH_STM32) && !defined(STM32GENERIC)
+#if defined(STM32GENERIC) && (defined(STM32F4) || defined(STM32F7))
 
 #include "HAL.h"
 
@@ -51,8 +51,7 @@ void HAL_timer_start(const uint8_t timer_num, const uint32_t frequency) {
       case STEP_TIMER_NUM:
         // STEPPER TIMER - use a 32bit timer if possible
         timer_instance[timer_num] = new HardwareTimer(STEP_TIMER_DEV);
-        //timer_instance[timer_num]->setMode(1, TIMER_OUTPUT_COMPARE); // No pin output just the interrupt
-        //timer_instance[timer_num]->setOverflow(frequency, HERTZ_FORMAT);
+        timer_instance[timer_num]->setOverflow(_MIN(hal_timer_t(HAL_TIMER_TYPE_MAX), (STEPPER_TIMER_RATE) / frequency), TICK_FORMAT);
         timer_instance[timer_num]->setPrescaleFactor(STEPPER_TIMER_PRESCALE);
         timer_instance[timer_num]->attachInterrupt(Step_Handler); // Called on update interruption (rollover)
         timer_instance[timer_num]->resume();
@@ -89,4 +88,4 @@ bool HAL_timer_interrupt_enabled(const uint8_t timer_num) {
   return HAL_timer_initialized(timer_num) && timer_enabled[timer_num];
 }
 
-#endif // ARDUINO_ARCH_STM32 && !STM32GENERIC
+#endif // STM32GENERIC && (STM32F4 || STM32F7)
