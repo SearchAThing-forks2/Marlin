@@ -73,7 +73,9 @@ extern "C" {
 /* #define HAL_SMARTCARD_MODULE_ENABLED   */
 /* #define HAL_WWDG_MODULE_ENABLED   */
 #define HAL_CORTEX_MODULE_ENABLED
-//#define HAL_PCD_MODULE_ENABLED NOTE: THIS IS REQUIRED but if enabled here (and not in platformio.ini) platformio core <4.1.0 makes the linking fail
+#ifndef HAL_PCD_MODULE_ENABLED
+  #define HAL_PCD_MODULE_ENABLED //Since STM32 v3.10700.191028 this is automatically added if any type of USB is enabled (as in Arduino IDE)
+#endif
 /* #define HAL_HCD_MODULE_ENABLED   */
 /* #define HAL_FMPI2C_MODULE_ENABLED   */
 /* #define HAL_SPDIFRX_MODULE_ENABLED   */
