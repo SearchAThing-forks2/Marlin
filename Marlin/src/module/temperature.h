@@ -268,8 +268,6 @@ class Temperature {
 
   public:
 
-    static volatile bool in_temp_isr;
-
     #if HOTENDS
       #if ENABLED(TEMP_SENSOR_1_AS_REDUNDANT)
         #define HOTEND_TEMPS (HOTENDS + 1)
@@ -513,7 +511,7 @@ class Temperature {
      * Called from the Temperature ISR
      */
     static void readings_ready();
-    static void isr();
+    static void tick();
 
     /**
      * Call periodically to manage heaters
