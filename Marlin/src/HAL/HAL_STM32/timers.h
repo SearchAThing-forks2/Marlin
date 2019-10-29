@@ -75,11 +75,9 @@
 #define TEMP_TIMER_NUM 1  // index of timer to use for temperature
 #define PULSE_TIMER_NUM STEP_TIMER_NUM
 
-//TODO: get rid of manual rate/prescale/ticks/frequency and use wanted HERTZ or MICROSECONDS in HAL_timer_start
-#define TEMP_TIMER_RATE 72000 // 72 Khz
-#define TEMP_TIMER_PRESCALE (HAL_TIMER_RATE/TEMP_TIMER_RATE)
-#define TEMP_TIMER_FREQUENCY 1000
+#define TEMP_TIMER_FREQUENCY 1000 //Temperature::isr() is expected to be called at around 1kHz
 
+//TODO: get rid of manual rate/prescale/ticks/cycles taken for procedures in stepper.cpp
 #define STEPPER_TIMER_RATE 2000000 // 2 Mhz
 #define STEPPER_TIMER_PRESCALE (HAL_TIMER_RATE / STEPPER_TIMER_RATE)
 #define STEPPER_TIMER_TICKS_PER_US (STEPPER_TIMER_RATE / 1000000) // stepper timer ticks per µs
@@ -130,14 +128,14 @@ FORCE_INLINE static uint32_t HAL_timer_get_count(const uint8_t timer_num) {
 
 FORCE_INLINE static void HAL_timer_set_compare(const uint8_t timer_num, const uint32_t compare) {
   if (HAL_timer_initialized(timer_num)) {
-      timer_instance[timer_num]->setOverflow(compare, TICK_FORMAT);
-      const uint32_t cnt = timer_instance[timer_num]->getCount(TICK_FORMAT);
+      const uint32_t cnt = timer_instance[timer_num]->getCount();
+      timer_instance[timer_num]->setCaptureCompare(1, compare, TICK_COMPARE_FORMAT); //Use channel 1
       if (cnt >= compare) timer_instance[timer_num]->refresh();
   }
 }
 
 FORCE_INLINE static hal_timer_t HAL_timer_get_compare(const uint8_t timer_num) {
-  return HAL_timer_initialized(timer_num) ? timer_instance[timer_num]->getOverflow(TICK_FORMAT) : 0;
+  return HAL_timer_initialized(timer_num) ? timer_instance[timer_num]->getCaptureCompare(1, TICK_COMPARE_FORMAT) : 0; //Use channel 1
 }
 
 #define HAL_timer_isr_prologue(TIMER_NUM)

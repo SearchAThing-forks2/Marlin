@@ -43,7 +43,8 @@ bool timer_enabled[NUM_HARDWARE_TIMERS] = { false };
 // Public functions
 // ------------------------
 
-void HAL_timer_start(const uint8_t timer_num, const uint32_t ticks) {
+// frequency is in Hertz
+void HAL_timer_start(const uint8_t timer_num, const uint32_t frequency) {
   if (!HAL_timer_initialized(timer_num)) {
    // According to documentation the prescale factor is computed automatically if setOverflow is in HERTZ_FORMAT
    switch (timer_num) {
@@ -52,15 +53,14 @@ void HAL_timer_start(const uint8_t timer_num, const uint32_t ticks) {
         timer_instance[timer_num] = new HardwareTimer(STEP_TIMER_DEV);
         timer_instance[timer_num]->setMode(1, TIMER_OUTPUT_COMPARE, NC);
         timer_instance[timer_num]->setPrescaleFactor(STEPPER_TIMER_PRESCALE);
-        timer_instance[timer_num]->setOverflow(_MIN(hal_timer_t(HAL_TIMER_TYPE_MAX), ticks), TICK_FORMAT);
+        timer_instance[timer_num]->setOverflow(frequency, HERTZ_FORMAT);
         timer_instance[timer_num]->attachInterrupt(Step_Handler); // Called on update interruption (rollover)
         break;
       case TEMP_TIMER_NUM:
         // TEMP TIMER - any available 16bit Timer
         timer_instance[timer_num] = new HardwareTimer(TEMP_TIMER_DEV);
         timer_instance[timer_num]->setMode(1, TIMER_OUTPUT_COMPARE, NC);
-        timer_instance[timer_num]->setPrescaleFactor(TEMP_TIMER_PRESCALE);
-        timer_instance[timer_num]->setOverflow(_MIN(hal_timer_t(HAL_TIMER_TYPE_MAX), ticks), TICK_FORMAT);
+        timer_instance[timer_num]->setOverflow(frequency, HERTZ_FORMAT);
         timer_instance[timer_num]->attachInterrupt(Temp_Handler);
         break;
     }
