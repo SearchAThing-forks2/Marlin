@@ -261,7 +261,7 @@ extern "C" {
 #define PIN_SERIAL_TX           PA9
 
 /* Extra HAL modules */
-#define HAL_PCD_MODULE_ENABLED
+//#define HAL_PCD_MODULE_ENABLED NOTE: THIS IS REQUIRED but if enabled here (and not in platformio.ini) platformio core <4.1.0 makes the linking fail
 
 #ifdef __cplusplus
 } // extern "C"
