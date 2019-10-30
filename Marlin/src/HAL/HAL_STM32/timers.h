@@ -130,10 +130,10 @@ FORCE_INLINE static void HAL_timer_set_compare(const uint8_t timer_num, const ui
       //so if the new compare value is less than the count it should trigger a compare interrupt.
   }
 }
-
+/* shouldn't be needed if the refresh works as advertised
 FORCE_INLINE static hal_timer_t HAL_timer_get_compare(const uint8_t timer_num) {
   return HAL_timer_initialized(timer_num) ? timer_instance[timer_num]->getCaptureCompare(1, TICK_COMPARE_FORMAT) : 0; //Use channel 1
-}
+}*/
 
 #define HAL_timer_isr_prologue(TIMER_NUM)
 #define HAL_timer_isr_epilogue(TIMER_NUM)

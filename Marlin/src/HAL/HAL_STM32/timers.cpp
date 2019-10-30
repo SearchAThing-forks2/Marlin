@@ -97,10 +97,10 @@ bool HAL_timer_interrupt_enabled(const uint8_t timer_num) {
 //it's here but please avoid using it if not absolutely necessary.
 //accessing hardware registers from outside the HAL lowers compatibility with other platforms.
 TIM_TypeDef * HAL_timer_device(const uint8_t timer_num) {
-   switch (timer_num) {
+  switch (timer_num) {
       case STEP_TIMER_NUM: return STEP_TIMER_DEV;
       case TEMP_TIMER_NUM: return TEMP_TIMER_DEV;
-      return nullptr;
-   }
+  }
+  return nullptr;
 }
 #endif // ARDUINO_ARCH_STM32 && !STM32GENERIC
