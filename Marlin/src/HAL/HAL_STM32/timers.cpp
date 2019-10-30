@@ -59,15 +59,14 @@ void HAL_timer_start(const uint8_t timer_num, const uint32_t frequency) {
         timer_instance[timer_num]->setMode(1, TIMER_OUTPUT_COMPARE, NC);
         timer_instance[timer_num]->setPrescaleFactor(STEPPER_TIMER_PRESCALE);
         timer_instance[timer_num]->setOverflow(frequency, HERTZ_FORMAT);
-        timer_instance[timer_num]->attachInterrupt(Step_Handler); // Called on rollover AND
-        timer_instance[timer_num]->attachInterrupt(1, Step_Handler); // called on channel 1 compare
+        timer_instance[timer_num]->attachInterrupt(Step_Handler); // Called on rollover
         break;
       case TEMP_TIMER_NUM:
         // TEMP TIMER - any available 16bit Timer
         timer_instance[timer_num] = new HardwareTimer(TEMP_TIMER_DEV);
         timer_instance[timer_num]->setMode(1, TIMER_OUTPUT_COMPARE, NC);
         timer_instance[timer_num]->setOverflow(frequency, HERTZ_FORMAT);
-        timer_instance[timer_num]->attachInterrupt(Temp_Handler); //Just called on rollover
+        timer_instance[timer_num]->attachInterrupt(Temp_Handler);
         break;
     }
   }

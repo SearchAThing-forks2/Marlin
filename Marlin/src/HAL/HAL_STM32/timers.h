@@ -123,17 +123,15 @@ FORCE_INLINE static uint32_t HAL_timer_get_count(const uint8_t timer_num) {
   return HAL_timer_initialized(timer_num) ? timer_instance[timer_num]->getCount() : 0;
 }
 
-FORCE_INLINE static void HAL_timer_set_compare(const uint8_t timer_num, const uint32_t compare) {
+//warning: Method name can be misleading.
+//On STM32 we don't need to set a compare register but the Auto-Reload register (ARR)
+FORCE_INLINE static void HAL_timer_set_compare(const uint8_t timer_num, const uint32_t overflow) {
   if (HAL_timer_initialized(timer_num)) {
-      timer_instance[timer_num]->setCaptureCompare(1, compare, TICK_COMPARE_FORMAT); //Use channel 1
+      timer_instance[timer_num]->setOverflow(overflow + 1, TICK_FORMAT);
       timer_instance[timer_num]->refresh(); //from wiki "force all registers (Autoreload, prescaler, compare) to be taken into account"
-      //so if the new compare value is less than the count it should trigger a compare interrupt.
+      //so if the new overflow value is less than the count it should trigger a rollover interrupt.
   }
 }
-/* shouldn't be needed if the refresh works as advertised
-FORCE_INLINE static hal_timer_t HAL_timer_get_compare(const uint8_t timer_num) {
-  return HAL_timer_initialized(timer_num) ? timer_instance[timer_num]->getCaptureCompare(1, TICK_COMPARE_FORMAT) : 0; //Use channel 1
-}*/
 
 #define HAL_timer_isr_prologue(TIMER_NUM)
 #define HAL_timer_isr_epilogue(TIMER_NUM)
