@@ -86,11 +86,6 @@
 #define PULSE_TIMER_PRESCALE STEPPER_TIMER_PRESCALE
 #define PULSE_TIMER_TICKS_PER_US STEPPER_TIMER_TICKS_PER_US
 
-#define __TIMER_DEV(X) TIM##X
-#define _TIMER_DEV(X) __TIMER_DEV(X)
-#define STEP_TIMER_DEV _TIMER_DEV(STEP_TIMER)
-#define TEMP_TIMER_DEV _TIMER_DEV(TEMP_TIMER)
-
 #define ENABLE_STEPPER_DRIVER_INTERRUPT() HAL_timer_enable_interrupt(STEP_TIMER_NUM)
 #define DISABLE_STEPPER_DRIVER_INTERRUPT() HAL_timer_disable_interrupt(STEP_TIMER_NUM)
 #define STEPPER_ISR_ENABLED() HAL_timer_interrupt_enabled(STEP_TIMER_NUM)
@@ -118,6 +113,8 @@ void HAL_timer_enable_interrupt(const uint8_t timer_num);
 void HAL_timer_disable_interrupt(const uint8_t timer_num);
 bool HAL_timer_interrupt_enabled(const uint8_t timer_num);
 
+//TIM_TypeDef * HAL_timer_device(const uint8_t timer_num); no need to be public for now. not public = not used externally
+
 //made FORCE_INLINE because it's used from FORCE_INLINE (performance critical) methods
 FORCE_INLINE bool HAL_timer_initialized(const uint8_t timer_num) {
   return timer_instance[timer_num] != NULL;
@@ -128,9 +125,9 @@ FORCE_INLINE static uint32_t HAL_timer_get_count(const uint8_t timer_num) {
 
 FORCE_INLINE static void HAL_timer_set_compare(const uint8_t timer_num, const uint32_t compare) {
   if (HAL_timer_initialized(timer_num)) {
-      const uint32_t cnt = timer_instance[timer_num]->getCount();
       timer_instance[timer_num]->setCaptureCompare(1, compare, TICK_COMPARE_FORMAT); //Use channel 1
-      if (cnt >= compare) timer_instance[timer_num]->refresh();
+      timer_instance[timer_num]->refresh(); //from wiki "force all registers (Autoreload, prescaler, compare) to be taken into account"
+      //so if the new compare value is less than the count it should trigger a compare interrupt.
   }
 }
 

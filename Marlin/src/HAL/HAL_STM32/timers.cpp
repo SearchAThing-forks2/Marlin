@@ -32,6 +32,11 @@
 
 #define NUM_HARDWARE_TIMERS 2
 
+#define __TIMER_DEV(X) TIM##X
+#define _TIMER_DEV(X) __TIMER_DEV(X)
+#define STEP_TIMER_DEV _TIMER_DEV(STEP_TIMER)
+#define TEMP_TIMER_DEV _TIMER_DEV(TEMP_TIMER)
+
 // ------------------------
 // Private Variables
 // ------------------------
@@ -54,14 +59,15 @@ void HAL_timer_start(const uint8_t timer_num, const uint32_t frequency) {
         timer_instance[timer_num]->setMode(1, TIMER_OUTPUT_COMPARE, NC);
         timer_instance[timer_num]->setPrescaleFactor(STEPPER_TIMER_PRESCALE);
         timer_instance[timer_num]->setOverflow(frequency, HERTZ_FORMAT);
-        timer_instance[timer_num]->attachInterrupt(Step_Handler); // Called on update interruption (rollover)
+        timer_instance[timer_num]->attachInterrupt(Step_Handler); // Called on rollover AND
+        timer_instance[timer_num]->attachInterrupt(1, Step_Handler); // called on channel 1 compare
         break;
       case TEMP_TIMER_NUM:
         // TEMP TIMER - any available 16bit Timer
         timer_instance[timer_num] = new HardwareTimer(TEMP_TIMER_DEV);
         timer_instance[timer_num]->setMode(1, TIMER_OUTPUT_COMPARE, NC);
         timer_instance[timer_num]->setOverflow(frequency, HERTZ_FORMAT);
-        timer_instance[timer_num]->attachInterrupt(Temp_Handler);
+        timer_instance[timer_num]->attachInterrupt(Temp_Handler); //Just called on rollover
         break;
     }
   }
@@ -87,4 +93,14 @@ bool HAL_timer_interrupt_enabled(const uint8_t timer_num) {
   return HAL_timer_initialized(timer_num) && timer_enabled[timer_num];
 }
 
+//warning: From great power comes great responsibility.
+//it's here but please avoid using it if not absolutely necessary.
+//accessing hardware registers from outside the HAL lowers compatibility with other platforms.
+TIM_TypeDef * HAL_timer_device(const uint8_t timer_num) {
+   switch (timer_num) {
+      case STEP_TIMER_NUM: return STEP_TIMER_DEV;
+      case TEMP_TIMER_NUM: return TEMP_TIMER_DEV;
+      return nullptr;
+   }
+}
 #endif // ARDUINO_ARCH_STM32 && !STM32GENERIC
