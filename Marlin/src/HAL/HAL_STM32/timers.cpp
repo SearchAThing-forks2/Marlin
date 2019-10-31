@@ -68,7 +68,6 @@ void HAL_timer_start(const uint8_t timer_num, const uint32_t frequency) {
          */
         timer_instance[timer_num]->setPrescaleFactor(STEPPER_TIMER_PRESCALE); //the -1 is done internally
         timer_instance[timer_num]->setOverflow(_MIN(hal_timer_t(HAL_TIMER_TYPE_MAX), HAL_TIMER_RATE / STEPPER_TIMER_PRESCALE / frequency), TICK_FORMAT);
-        timer_instance[timer_num]->setPrescaleFactor(STEPPER_TIMER_PRESCALE); //it shouldn't be needed again
         timer_instance[timer_num]->attachInterrupt(Step_Handler); // Called on rollover
         break;
       case TEMP_TIMER_NUM: // TEMP TIMER - any available 16bit timer
