@@ -27,6 +27,8 @@ env:
 
   # Extended STM32 Environments
   - TEST_PLATFORM="STM32F103RC_bigtree"
+  - TEST_PLATFORM="STM32F103RC_bigtree_USB"
+  - TEST_PLATFORM="STM32F103RC_fysetc"
   - TEST_PLATFORM="jgaurora_a5s_a1"
   - TEST_PLATFORM="STM32F103VE_longer"
   - TEST_PLATFORM="STM32F407VE_black"
@@ -42,16 +44,13 @@ env:
   # Non-working environment tests
   #- TEST_PLATFORM="at90usb1286_cdc"
   #- TEST_PLATFORM="at90usb1286_dfu"
-  - TEST_PLATFORM="STM32F103CB_malyan"
+  #- TEST_PLATFORM="STM32F103CB_malyan"
   #- TEST_PLATFORM="mks_robin_lite"
   #- TEST_PLATFORM="mks_robin_mini"
   #- TEST_PLATFORM="mks_robin_nano"
   #- TEST_PLATFORM="SAMD51_grandcentral_m4"
-  - TEST_PLATFORM="STM32F103RC_bigtree"
-  - TEST_PLATFORM="STM32F103RC_bigtree_USB"
-  - TEST_PLATFORM="STM32F103RC_fysetc"
-  - TEST_PLATFORM="STM32F4"
-  - TEST_PLATFORM="STM32F7"
+  #- TEST_PLATFORM="STM32F4"
+  #- TEST_PLATFORM="STM32F7"
 
 before_install:
   #
