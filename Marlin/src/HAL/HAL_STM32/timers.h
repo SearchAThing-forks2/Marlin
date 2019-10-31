@@ -127,10 +127,11 @@ FORCE_INLINE static hal_timer_t HAL_timer_get_count(const uint8_t timer_num) {
 //On STM32 we don't want to set a compare register but the Auto-Reload Register (ARR)
 FORCE_INLINE static void HAL_timer_set_compare(const uint8_t timer_num, const hal_timer_t overflow) {
   if (HAL_timer_initialized(timer_num)) {
-      timer_instance[timer_num]->setOverflow(overflow /* +1 */, TICK_FORMAT); //the -1 is done inside the setOverflow so this should be +1 to mantain the same logic as old code
-      if (overflow < timer_instance[timer_num]->getCount())
-	      timer_instance[timer_num]->refresh(); //from wiki "force all registers (Autoreload, prescaler, compare) to be taken into account"
+      timer_instance[timer_num]->setOverflow(overflow + 1, TICK_FORMAT); //the -1 is done inside the setOverflow
+      //from wiki "force all registers (Autoreload, prescaler, compare) to be taken into account"
       //so if the new overflow value is less than the count it should trigger a rollover interrupt.
+      //added the if anyway sice users report it doesn't boot
+      if (overflow < timer_instance[timer_num]->getCount()) timer_instance[timer_num]->refresh();
   }
 }
 
