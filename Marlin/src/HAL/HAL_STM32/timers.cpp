@@ -54,19 +54,18 @@ void HAL_timer_start(const uint8_t timer_num, const uint32_t frequency) {
     switch (timer_num) {
       case STEP_TIMER_NUM: // STEPPER TIMER - use a 32bit timer if possible
         timer_instance[timer_num] = new HardwareTimer(STEP_TIMER_DEV);
-
         /* Set the prescaler to the final desired value.
-         * This would change the effective ISR callback frequency but
-         * when HAL_timer_start(timer_num=0) is called in the core for the first time
-         * the real frequency isn't important as long as, after boot,
-         * the ISR gets called with the correct prescaler and count register.
-         * So here we set the prescaler to the correct, final value and ignore the
-         * requency asked. We will call back the ISR in 1 second to start at full speed.
+         * This will change the effective ISR callback frequency but when
+         * HAL_timer_start(timer_num=0) is called in the core for the first time
+         * the real frequency isn't important as long as, after boot, the ISR
+         * gets called with the correct prescaler and count register. So here
+         * we set the prescaler to the correct, final value and ignore the frequency
+         * asked. We will call back the ISR in 1 second to start at full speed.
          * 
-         * The proper fix, however, would be a correct initialization or a
+         * The proper fix, however, would be a correct initialization OR a
          * HAL_timer_change(const uint8_t timer_num, const uint32_t frequency)
-         * which changes the prescaler when actually needed
-         * (like when steppers are turned on)
+         * which changes the prescaler when an IRQ frequency change is needed
+         * (for example when steppers are turned on)
          */
         timer_instance[timer_num]->setPrescaleFactor(STEPPER_TIMER_PRESCALE); // Decrement done internally
         timer_instance[timer_num]->setOverflow(_MIN(hal_timer_t(HAL_TIMER_TYPE_MAX), HAL_TIMER_RATE / STEPPER_TIMER_PRESCALE /* /frequency */), TICK_FORMAT);
