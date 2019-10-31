@@ -55,7 +55,7 @@ void HAL_timer_start(const uint8_t timer_num, const uint32_t frequency) {
       case STEP_TIMER_NUM: // STEPPER TIMER - use a 32bit timer if possible
         timer_instance[timer_num] = new HardwareTimer(STEP_TIMER_DEV);
 
-        /* Set the prescaler value to the final, desidered, one.
+        /* Set the prescaler to the final desired value.
          * This would change the effective ISR callback frequency but
          * when HAL_timer_start(timer_num=0) is called in the core for the first time
          * the real frequency isn't important as long as, after boot,
@@ -68,7 +68,7 @@ void HAL_timer_start(const uint8_t timer_num, const uint32_t frequency) {
          * which changes the prescaler when actually needed
          * (like when steppers are turned on)
          */
-        timer_instance[timer_num]->setPrescaleFactor(STEPPER_TIMER_PRESCALE); //the -1 is done internally
+        timer_instance[timer_num]->setPrescaleFactor(STEPPER_TIMER_PRESCALE); // Decrement done internally
         timer_instance[timer_num]->setOverflow(_MIN(hal_timer_t(HAL_TIMER_TYPE_MAX), HAL_TIMER_RATE / STEPPER_TIMER_PRESCALE /* /frequency */), TICK_FORMAT);
         timer_instance[timer_num]->attachInterrupt(Step_Handler); // Called on rollover
         break;
@@ -108,9 +108,10 @@ bool HAL_timer_interrupt_enabled(const uint8_t timer_num) {
 //accessing hardware registers from outside the HAL lowers compatibility with other platforms.
 TIM_TypeDef * HAL_timer_device(const uint8_t timer_num) {
   switch (timer_num) {
-      case STEP_TIMER_NUM: return STEP_TIMER_DEV;
-      case TEMP_TIMER_NUM: return TEMP_TIMER_DEV;
+    case STEP_TIMER_NUM: return STEP_TIMER_DEV;
+    case TEMP_TIMER_NUM: return TEMP_TIMER_DEV;
   }
   return nullptr;
 }
+
 #endif // ARDUINO_ARCH_STM32 && !STM32GENERIC
