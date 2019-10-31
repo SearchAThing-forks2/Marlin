@@ -79,8 +79,8 @@
 
 //TODO: get rid of manual rate/prescale/ticks/cycles taken for procedures in stepper.cpp
 #define STEPPER_TIMER_RATE 2000000 // 2 Mhz
-#define STEPPER_TIMER_PRESCALE (HAL_TIMER_RATE / STEPPER_TIMER_RATE)
-#define STEPPER_TIMER_TICKS_PER_US (STEPPER_TIMER_RATE / 1000000) // stepper timer ticks per µs
+#define STEPPER_TIMER_PRESCALE ((HAL_TIMER_RATE) / (STEPPER_TIMER_RATE))
+#define STEPPER_TIMER_TICKS_PER_US ((STEPPER_TIMER_RATE) / 1000000) // stepper timer ticks per µs
 
 #define PULSE_TIMER_RATE STEPPER_TIMER_RATE
 #define PULSE_TIMER_PRESCALE STEPPER_TIMER_PRESCALE
@@ -127,10 +127,10 @@ FORCE_INLINE static hal_timer_t HAL_timer_get_count(const uint8_t timer_num) {
 //On STM32 we don't want to set a compare register but the Auto-Reload Register (ARR)
 FORCE_INLINE static void HAL_timer_set_compare(const uint8_t timer_num, const hal_timer_t overflow) {
   if (HAL_timer_initialized(timer_num)) {
-      timer_instance[timer_num]->setOverflow(overflow + 1, TICK_FORMAT); //the -1 is done inside the setOverflow
-      //from wiki "force all registers (Autoreload, prescaler, compare) to be taken into account"
-      //so if the new overflow value is less than the count it will trigger a rollover interrupt.
-      timer_instance[timer_num]->refresh();
+    timer_instance[timer_num]->setOverflow(overflow + 1, TICK_FORMAT); // Value decremented by setOverflow()
+    // wiki: "force all registers (Autoreload, prescaler, compare) to be taken into account"
+    // so if the new overflow value is less than the count it will trigger a rollover interrupt.
+    timer_instance[timer_num]->refresh();
   }
 }
 
