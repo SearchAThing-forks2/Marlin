@@ -129,9 +129,8 @@ FORCE_INLINE static void HAL_timer_set_compare(const uint8_t timer_num, const ha
   if (HAL_timer_initialized(timer_num)) {
       timer_instance[timer_num]->setOverflow(overflow + 1, TICK_FORMAT); //the -1 is done inside the setOverflow
       //from wiki "force all registers (Autoreload, prescaler, compare) to be taken into account"
-      //so if the new overflow value is less than the count it should trigger a rollover interrupt.
-      //added the if anyway sice users report it doesn't boot
-      if (overflow < timer_instance[timer_num]->getCount()) timer_instance[timer_num]->refresh();
+      //so if the new overflow value is less than the count it will trigger a rollover interrupt.
+      timer_instance[timer_num]->refresh();
   }
 }
 
