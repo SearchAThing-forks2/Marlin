@@ -51,20 +51,34 @@ bool timer_enabled[NUM_HARDWARE_TIMERS] = { false };
 // frequency is in Hertz
 void HAL_timer_start(const uint8_t timer_num, const uint32_t frequency) {
   if (!HAL_timer_initialized(timer_num)) {
-   // According to documentation the prescale factor is computed automatically if setOverflow is in HERTZ_FORMAT
    switch (timer_num) {
       case STEP_TIMER_NUM:
         // STEPPER TIMER - use a 32bit timer if possible
         timer_instance[timer_num] = new HardwareTimer(STEP_TIMER_DEV);
         timer_instance[timer_num]->setMode(1, TIMER_OUTPUT_COMPARE, NC);
+
+        /* Change the prescaler value to the final, desidered, one.
+         * This would change the effective ISR callback frequency but
+         * when HAL_timer_start(timer_num=0) is called in the core for the first time
+         * the real frequency isn't important as long as, after boot,
+         * the ISR gets called with the correct prescaler and count register.
+         * So here we set the prescaler to the correct, final value and
+         * ignore the frequency setting the TICKS to the max
+         * meaning "call the ISR as few times as possible with that prescaler".
+         * The proper fix, however, would be a correct initialization or a
+         * HAL_timer_change(const uint8_t timer_num, const uint32_t frequency)
+         * which changes the prescaler when actually needed (like when steppers are turned on)
+         */
         timer_instance[timer_num]->setPrescaleFactor(STEPPER_TIMER_PRESCALE);
-        timer_instance[timer_num]->setOverflow(frequency, HERTZ_FORMAT);
+        timer_instance[timer_num]->setOverflow(HAL_TIMER_TYPE_MAX, TICK_FORMAT); //overflow is set to max as long as it gets called a bit after boot
         timer_instance[timer_num]->attachInterrupt(Step_Handler); // Called on rollover
         break;
       case TEMP_TIMER_NUM:
         // TEMP TIMER - any available 16bit Timer
         timer_instance[timer_num] = new HardwareTimer(TEMP_TIMER_DEV);
         timer_instance[timer_num]->setMode(1, TIMER_OUTPUT_COMPARE, NC);
+        // The prescale factor is computed automatically
+        // if setOverflow is in HERTZ_FORMAT
         timer_instance[timer_num]->setOverflow(frequency, HERTZ_FORMAT);
         timer_instance[timer_num]->attachInterrupt(Temp_Handler);
         break;
