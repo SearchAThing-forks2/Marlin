@@ -51,7 +51,7 @@ bool timer_enabled[NUM_HARDWARE_TIMERS] = { false };
 // frequency is in Hertz
 void HAL_timer_start(const uint8_t timer_num, const uint32_t frequency) {
   if (!HAL_timer_initialized(timer_num)) {
-    uint32_t P,S;
+    uint32_t P, S;
 
     switch (timer_num) {
       case STEP_TIMER_NUM: // STEPPER TIMER - use a 32bit timer if possible
@@ -74,7 +74,7 @@ void HAL_timer_start(const uint8_t timer_num, const uint32_t frequency) {
         timer_instance[timer_num]->attachInterrupt(Step_Handler); // Called on rollover
         
         HAL_NVIC_GetPriority(STEP_TIMER_IRQ_NAME, NVIC_PRIORITYGROUP_4, &P, &S); //gets default priority and subpriority
-        HAL_NVIC_SetPriority(STEP_TIMER_IRQ_NAME, P + STEP_TIMER_IRQ_PRIO, 0); //increases the value (to not block SoftwareSerial which uses default) the lower, the lesser
+        HAL_NVIC_SetPriority(STEP_TIMER_IRQ_NAME, P + STEP_TIMER_IRQ_PRIO, 0); //increases the value (to not block SoftwareSerial which uses default) the lower, the higher 0 = MAX priority, 1 = MIN
         break;
       case TEMP_TIMER_NUM: // TEMP TIMER - any available 16bit timer
         timer_instance[timer_num] = new HardwareTimer(TEMP_TIMER_DEV);
