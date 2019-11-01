@@ -71,6 +71,14 @@
 
 #endif
 
+#ifndef STEP_TIMER_IRQ_PRIO
+  #define STEP_TIMER_IRQ_PRIO 1
+#endif
+
+#ifndef TEMP_TIMER_IRQ_PRIO
+  #define TEMP_TIMER_IRQ_PRIO 2
+#endif
+
 #define STEP_TIMER_NUM 0  // index of timer to use for stepper
 #define TEMP_TIMER_NUM 1  // index of timer to use for temperature
 #define PULSE_TIMER_NUM STEP_TIMER_NUM
@@ -85,6 +93,12 @@
 #define PULSE_TIMER_RATE STEPPER_TIMER_RATE
 #define PULSE_TIMER_PRESCALE STEPPER_TIMER_PRESCALE
 #define PULSE_TIMER_TICKS_PER_US STEPPER_TIMER_TICKS_PER_US
+
+#define __TIMER_IRQ_NAME(X) TIM##X##_IRQn
+#define _TIMER_IRQ_NAME(X) __TIMER_IRQ_NAME(X)
+
+#define STEP_TIMER_IRQ_NAME _TIMER_IRQ_NAME(STEP_TIMER)
+#define TEMP_TIMER_IRQ_NAME _TIMER_IRQ_NAME(TEMP_TIMER)
 
 #define ENABLE_STEPPER_DRIVER_INTERRUPT() HAL_timer_enable_interrupt(STEP_TIMER_NUM)
 #define DISABLE_STEPPER_DRIVER_INTERRUPT() HAL_timer_disable_interrupt(STEP_TIMER_NUM)
