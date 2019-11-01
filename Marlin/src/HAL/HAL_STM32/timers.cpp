@@ -26,6 +26,10 @@
 
 #include "timers.h"
 
+#if HAS_TMC220x
+  #include <SoftwareSerial.h>
+#endif  
+
 // ------------------------
 // Local defines
 // ------------------------
@@ -100,8 +104,15 @@ void HAL_timer_enable_interrupt(const uint8_t timer_num) {
 
     //since actual implementation of HardwareTimer::resume() reinitializes the timer
     //it resets the priority at every call so we need to set it again.
-    if (timer_num == TEMP_TIMER_NUM)
-      HAL_NVIC_SetPriority(TEMP_TIMER_IRQ_NAME, TIM_IRQ_PRIO + 1, 0); //default+1
+    switch (timer_num) {
+      case STEP_TIMER_NUM:
+      HAL_NVIC_SetPriority(STEP_TIMER_IRQ_NAME, STEP_TIMER_PRIORITY, 0);
+      break;
+
+      case TEMP_TIMER_NUM:
+      HAL_NVIC_SetPriority(TEMP_TIMER_IRQ_NAME, TEMP_TIMER_PRIORITY, 0);
+      break;
+    }
   }
 }
 
@@ -127,5 +138,12 @@ TIM_TypeDef * HAL_timer_device(const uint8_t timer_num) {
   }
   return nullptr;
 }
+
+#if HAS_TMC220x
+  void swserial_init()
+  {
+    SoftwareSerial::setInterruptPriority(SWSERIAL_TIMER_PRIORITY, 0);
+  }
+#endif
 
 #endif // ARDUINO_ARCH_STM32 && !STM32GENERIC
