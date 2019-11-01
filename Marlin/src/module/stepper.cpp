@@ -1247,8 +1247,10 @@ void Stepper::set_directions() {
 
 HAL_STEP_TIMER_ISR() {
   HAL_timer_isr_prologue(STEP_TIMER_NUM);
+    WRITE(PF9, HIGH);
 
   Stepper::isr();
+    WRITE(PF9, LOW);
 
   HAL_timer_isr_epilogue(STEP_TIMER_NUM);
 }

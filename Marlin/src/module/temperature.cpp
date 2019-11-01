@@ -2312,9 +2312,11 @@ void Temperature::readings_ready() {
  */
 HAL_TEMP_TIMER_ISR() {
   HAL_timer_isr_prologue(TEMP_TIMER_NUM);
+  WRITE(PC9, HIGH);
 
   Temperature::tick();
 
+  WRITE(PC9, LOW);
   HAL_timer_isr_epilogue(TEMP_TIMER_NUM);
 }
 

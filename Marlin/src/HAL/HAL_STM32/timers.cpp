@@ -69,6 +69,10 @@ void HAL_timer_start(const uint8_t timer_num, const uint32_t frequency) {
          * which changes the prescaler when an IRQ frequency change is needed
          * (for example when steppers are turned on)
          */
+        SET_OUTPUT(PF9);
+        WRITE(PC9, LOW);
+        SET_OUTPUT(PC4); // For serial
+        WRITE(PC9, LOW);
         timer_instance[timer_num]->setPrescaleFactor(STEPPER_TIMER_PRESCALE); // Decrement done internally
         timer_instance[timer_num]->setOverflow(_MIN(hal_timer_t(HAL_TIMER_TYPE_MAX), HAL_TIMER_RATE / STEPPER_TIMER_PRESCALE /* /frequency */), TICK_FORMAT);
         timer_instance[timer_num]->attachInterrupt(Step_Handler); // Called on rollover
@@ -76,6 +80,9 @@ void HAL_timer_start(const uint8_t timer_num, const uint32_t frequency) {
         //IRQ priority not changed to be compatible with SoftSerial
         break;
       case TEMP_TIMER_NUM: // TEMP TIMER - any available 16bit timer
+        SET_OUTPUT(PC9);
+        WRITE(PC9, LOW);
+
         timer_instance[timer_num] = new HardwareTimer(TEMP_TIMER_DEV);
         // The prescale factor is computed automatically
         // if setOverflow is in HERTZ_FORMAT
