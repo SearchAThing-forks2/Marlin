@@ -50,9 +50,9 @@ bool timer_enabled[NUM_HARDWARE_TIMERS] = { false };
 
 // frequency is in Hertz
 void HAL_timer_start(const uint8_t timer_num, const uint32_t frequency) {
+  static_assert(TIM_IRQ_PRIO > 0 && TIM_IRQ_PRIO < 15, "Default timer interrupt priority is too low to allow proper prioritization of interrupts.");
+  
   if (!HAL_timer_initialized(timer_num)) {
-    uint32_t P, S;
-
     switch (timer_num) {
       case STEP_TIMER_NUM: // STEPPER TIMER - use a 32bit timer if possible
         timer_instance[timer_num] = new HardwareTimer(STEP_TIMER_DEV);
@@ -72,9 +72,8 @@ void HAL_timer_start(const uint8_t timer_num, const uint32_t frequency) {
         timer_instance[timer_num]->setPrescaleFactor(STEPPER_TIMER_PRESCALE); // Decrement done internally
         timer_instance[timer_num]->setOverflow(_MIN(hal_timer_t(HAL_TIMER_TYPE_MAX), HAL_TIMER_RATE / STEPPER_TIMER_PRESCALE /* /frequency */), TICK_FORMAT);
         timer_instance[timer_num]->attachInterrupt(Step_Handler); // Called on rollover
-        
-        HAL_NVIC_GetPriority(STEP_TIMER_IRQ_NAME, NVIC_PRIORITYGROUP_4, &P, &S); //gets default priority and subpriority
-        HAL_NVIC_SetPriority(STEP_TIMER_IRQ_NAME, P + STEP_TIMER_IRQ_PRIO, 0); //increases the value (to not block SoftwareSerial which uses default) the lower, the higher 0 = MAX priority, 1 = MIN
+
+        //IRQ priority not changed to be compatible with SoftSerial
         break;
       case TEMP_TIMER_NUM: // TEMP TIMER - any available 16bit timer
         timer_instance[timer_num] = new HardwareTimer(TEMP_TIMER_DEV);
@@ -82,9 +81,6 @@ void HAL_timer_start(const uint8_t timer_num, const uint32_t frequency) {
         // if setOverflow is in HERTZ_FORMAT
         timer_instance[timer_num]->setOverflow(frequency, HERTZ_FORMAT);
         timer_instance[timer_num]->attachInterrupt(Temp_Handler);
-
-        HAL_NVIC_GetPriority(TEMP_TIMER_IRQ_NAME, NVIC_PRIORITYGROUP_4, &P, &S); //gets default priority and subpriority
-        HAL_NVIC_SetPriority(TEMP_TIMER_IRQ_NAME, P + TEMP_TIMER_IRQ_PRIO, 0); //increases the value (so less prioritary than Step)
         break;
     }
   }
@@ -92,9 +88,13 @@ void HAL_timer_start(const uint8_t timer_num, const uint32_t frequency) {
 
 void HAL_timer_enable_interrupt(const uint8_t timer_num) {
   if (HAL_timer_initialized(timer_num) && !timer_enabled[timer_num]) {
-    // Resume the timer to start receiving the interrupt
-    timer_instance[timer_num]->resume();
     timer_enabled[timer_num] = true;
+    timer_instance[timer_num]->resume(); // Resume the timer to start receiving the interrupt
+
+    //since actual implementation of HardwareTimer::resume() reinitializes the timer
+    //it resets the priority at every call so we need to set it again.
+    if (timer_num == TEMP_TIMER_NUM)
+      HAL_NVIC_SetPriority(TEMP_TIMER_IRQ_NAME, TIM_IRQ_PRIO + 1, 0); //default+1
   }
 }
 
