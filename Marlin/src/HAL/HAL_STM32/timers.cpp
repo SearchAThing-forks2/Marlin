@@ -74,7 +74,7 @@ void HAL_timer_start(const uint8_t timer_num, const uint32_t frequency) {
          * (for example when steppers are turned on)
          */
         SET_OUTPUT(PF9);
-        WRITE(PC9, LOW);
+        WRITE(PF9, LOW);
         SET_OUTPUT(PC4); // For serial
         WRITE(PC9, LOW);
         timer_instance[timer_num]->setPrescaleFactor(STEPPER_TIMER_PRESCALE); // Decrement done internally
