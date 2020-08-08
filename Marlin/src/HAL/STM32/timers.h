@@ -30,8 +30,18 @@
 
 #define FORCE_INLINE __attribute__((always_inline)) inline
 
+// STM32 timers may be 16 or 32 bit. Limiting HAL_TIMER_TYPE_MAX to 16 bits
+// avoids issues with STM32F0 MCUs, which seem to pause timers if UINT32_MAX
+// is written to the register. STM32F4 timers do not manifest this issue,
+// even when writing to 16 bit timers.
+//
+// The range of the timer can be queried at runtime using IS_TIM_32B_COUNTER_INSTANCE.
+// This is a more expensive check than a simple compile-time constant, so its
+// implementation is deferred until the desire for a 32-bit range outweighs the cost
+// of adding a run-time check and HAL_TIMER_TYPE_MAX is refactored to allow unique
+// values for each timer.
 #define hal_timer_t uint32_t
-#define HAL_TIMER_TYPE_MAX 0xFFFFFFFF // Timers can be 16 or 32 bit
+#define HAL_TIMER_TYPE_MAX UINT16_MAX
 
 #ifndef STEP_TIMER_NUM
   #define STEP_TIMER_NUM        0  // Timer Index for Stepper
