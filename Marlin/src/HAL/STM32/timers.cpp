@@ -149,6 +149,7 @@ void HAL_timer_start(const uint8_t timer_num, const uint32_t frequency) {
         timer_instance[timer_num] = new HardwareTimer(TEMP_TIMER_DEV);
         // The prescale factor is computed automatically for HERTZ_FORMAT
         timer_instance[timer_num]->setOverflow(frequency, HERTZ_FORMAT);
+        SERIAL_ECHOLNPAIR("Step Timer Source Clock: ", GetStepTimerFrequency());
         break;
     }
 
