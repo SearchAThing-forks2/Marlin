@@ -63,7 +63,9 @@
 
 // On the Malyan M200, this will be Serial1. On a RAMPS board,
 // it might not be.
-#define LCD_SERIAL Serial1
+#ifndef LCD_SERIAL
+  #define LCD_SERIAL Serial1
+#endif
 
 // This is based on longest sys command + a filename, plus some buffer
 // in case we encounter some data we don't recognize
