@@ -93,7 +93,7 @@ static inline __always_inline void my_usart_irq(ring_buffer *rb, ring_buffer *wb
   DEFINE_HWSERIAL_MARLIN(MSerial1, 1);
 #endif
 
-#if SERIAL_PORT == 2 || SERIAL_PORT_2 == 2 || DGUS_SERIAL_PORT == 2
+#if SERIAL_PORT == 2 || SERIAL_PORT_2 == 2 || DGUS_SERIAL_PORT == 2 || MALYAN_LCD_SERIAL == 2
   DEFINE_HWSERIAL_MARLIN(MSerial2, 2);
 #endif
 
