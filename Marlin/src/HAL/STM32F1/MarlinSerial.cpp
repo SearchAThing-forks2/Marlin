@@ -89,23 +89,19 @@ static inline __always_inline void my_usart_irq(ring_buffer *rb, ring_buffer *wb
     my_usart_irq(USART##n->rb, USART##n->wb, USART##n##_BASE, MSerial##n); \
   }
 
-#if SERIAL_PORT == 1 || SERIAL_PORT_2 == 1 || DGUS_SERIAL_PORT == 1
+#if HAS_MSERIAL(1)
   DEFINE_HWSERIAL_MARLIN(MSerial1, 1);
 #endif
-
-#if SERIAL_PORT == 2 || SERIAL_PORT_2 == 2 || DGUS_SERIAL_PORT == 2 || MALYAN_LCD_SERIAL == 2
+#if HAS_MSERIAL(2)
   DEFINE_HWSERIAL_MARLIN(MSerial2, 2);
 #endif
-
-#if SERIAL_PORT == 3 || SERIAL_PORT_2 == 3 || DGUS_SERIAL_PORT == 3
+#if HAS_MSERIAL(3)
   DEFINE_HWSERIAL_MARLIN(MSerial3, 3);
 #endif
-
-#if SERIAL_PORT == 4 || SERIAL_PORT_2 == 4 || DGUS_SERIAL_PORT == 4
+#if HAS_MSERIAL(4)
   DEFINE_HWSERIAL_UART_MARLIN(MSerial4, 4);
 #endif
-
-#if SERIAL_PORT == 5 || SERIAL_PORT_2 == 5 || DGUS_SERIAL_PORT == 5
+#if HAS_MSERIAL(5)
   DEFINE_HWSERIAL_UART_MARLIN(MSerial5, 5);
 #endif
 

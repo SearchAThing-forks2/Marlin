@@ -2207,7 +2207,9 @@
 // Touch-screen LCD for Malyan M200/M300 printers
 //
 #define MALYAN_LCD
-#define MALYAN_LCD_SERIAL 2
+#if ENABLED(MALYAN_LCD)
+  #define MALYAN_LCD_SERIAL_PORT 2
+#endif
 
 // Set the version which will be displayed in malyanlcd
 //UINT16_T_MAX with format DD/MM/Y ( only displaying the last digit of year )
