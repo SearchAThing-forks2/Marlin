@@ -35,12 +35,17 @@
 
 class MarlinSerial : public HardwareSerial {
 public:
-  MarlinSerial(struct usart_dev *usart_device, uint8 tx_pin, uint8 rx_pin) :
+  MarlinSerial(struct usart_dev *usart_device, uint8 tx_pin, uint8 rx_pin, bool emergency_parser) :
     HardwareSerial(usart_device, tx_pin, rx_pin)
     #if ENABLED(EMERGENCY_PARSER)
-      , emergency_state(EmergencyParser::State::EP_RESET)
+      , emergency_parser_enabled(emergency_parser),
+      emergency_state(EmergencyParser::State::EP_RESET)
     #endif
-    { }
+    {
+      #if DISABLED(EMERGENCY_PARSER)
+        UNUSED(emergency_parser);
+      #endif
+    }
 
   #ifdef UART_IRQ_PRIO
     // shadow the parent methods to set irq priority after the begin
@@ -55,6 +60,7 @@ public:
   #endif
 
   #if ENABLED(EMERGENCY_PARSER)
+    bool emergency_parser_enabled;
     EmergencyParser::State emergency_state;
   #endif
 };

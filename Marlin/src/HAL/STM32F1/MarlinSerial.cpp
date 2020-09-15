@@ -53,7 +53,8 @@ static inline __always_inline void my_usart_irq(ring_buffer *rb, ring_buffer *wb
         rb_push_insert(rb, c);
       #endif
       #if ENABLED(EMERGENCY_PARSER)
-        emergency_parser.update(serial.emergency_state, c);
+        if (serial.emergency_parser_enabled)
+          emergency_parser.update(serial.emergency_state, c);
       #endif
     }
   }
@@ -73,21 +74,41 @@ static inline __always_inline void my_usart_irq(ring_buffer *rb, ring_buffer *wb
   }
 }
 
+// Not every MarlinSerial port should handle emergency parsing.
+// It would not make sense to parse GCode from TMC responses, for example.
+constexpr bool serial_handles_emergency(int port)
+{
+  auto test = USART1;
+  return false
+    #ifdef SERIAL_PORT
+      || (SERIAL_PORT) == port
+    #endif
+    #ifdef SERIAL_PORT_2
+      || (SERIAL_PORT_2) == port
+    #endif
+    #ifdef DGUS_SERIAL_PORT 
+      || (DGUS_SERIAL_PORT) == port
+    #endif
+    ;
+}
+
 #define DEFINE_HWSERIAL_MARLIN(name, n)  \
   MarlinSerial name(USART##n,            \
             BOARD_USART##n##_TX_PIN,     \
-            BOARD_USART##n##_RX_PIN);    \
+            BOARD_USART##n##_RX_PIN,     \
+            serial_handles_emergency(n));\
   extern "C" void __irq_usart##n(void) { \
     my_usart_irq(USART##n->rb, USART##n->wb, USART##n##_BASE, MSerial##n); \
   }
 
 #define DEFINE_HWSERIAL_UART_MARLIN(name, n) \
-  MarlinSerial name(UART##n,                 \
-            BOARD_USART##n##_TX_PIN,         \
-            BOARD_USART##n##_RX_PIN);        \
-  extern "C" void __irq_usart##n(void) {     \
-    my_usart_irq(UART##n->rb, UART##n->wb, UART##n##_BASE, MSerial##n); \
-  }
+MarlinSerial name(UART##n,                 \
+          BOARD_USART##n##_TX_PIN,         \
+          BOARD_USART##n##_RX_PIN,         \
+          serial_handles_emergency(n));    \
+extern "C" void __irq_usart##n(void) {     \
+  my_usart_irq(UART##n->rb, UART##n->wb, UART##n##_BASE, MSerial##n); \
+}
 
 // Instantiate all UARTs even if they are not needed
 // This avoids a bunch of logic to figure out every serial
