@@ -131,64 +131,64 @@ constexpr bool CheckSerialType(const HardwareSerial&) { return false; }
 // and prevents system hangs due to incorrect error handling in the framework version.
 // If you encounter this error, replace SerialX with MSerialX, for example MSerial3.
 #ifdef MYSERIAL0
-  static_assert(CheckSerialType(MYSERIAL0));
+  static_assert(CheckSerialType(MYSERIAL0), "MYSERIAL0 is defined incorrectly");
 #endif
 #ifdef MYSERIAL1
-  static_assert(CheckSerialType(MYSERIAL1));
+  static_assert(CheckSerialType(MYSERIAL1), "MYSERIAL1 is defined incorrectly");
 #endif
 #ifdef DGUS_SERIAL
-  static_assert(CheckSerialType(DGUS_SERIAL));
+  static_assert(CheckSerialType(DGUS_SERIAL), "DGUS_SERIAL is defined incorrectly");
 #endif
 #ifdef MALYAN_LCD_SERIAL
-  static_assert(CheckSerialType(MALYAN_LCD_SERIAL));
+  static_assert(CheckSerialType(MALYAN_LCD_SERIAL), "MALYAN_LCD_SERIAL is defined incorrectly");
 #endif
 #if AXIS_HAS_HW_SERIAL(X)
-  static_assert(CheckSerialType(X_HARDWARE_SERIAL));
+  static_assert(CheckSerialType(X_HARDWARE_SERIAL), "X_HARDWARE_SERIAL must be defined in the form MSerialX, rather than SerialX.");
 #endif
 #if AXIS_HAS_HW_SERIAL(X2)
-  static_assert(CheckSerialType(X2_HARDWARE_SERIAL));
+  static_assert(CheckSerialType(X2_HARDWARE_SERIAL), "X2_HARDWARE_SERIAL must be defined in the form MSerialX, rather than SerialX.");
 #endif
 #if AXIS_HAS_HW_SERIAL(Y)
-  static_assert(CheckSerialType(Y_HARDWARE_SERIAL));
+  static_assert(CheckSerialType(Y_HARDWARE_SERIAL), "Y_HARDWARE_SERIAL must be defined in the form MSerialX, rather than SerialX.");
 #endif
 #if AXIS_HAS_HW_SERIAL(Y2)
-  static_assert(CheckSerialType(Y2_HARDWARE_SERIAL));
+  static_assert(CheckSerialType(Y2_HARDWARE_SERIAL), "Y2_HARDWARE_SERIAL must be defined in the form MSerialX, rather than SerialX.");
 #endif
 #if AXIS_HAS_HW_SERIAL(Z)
-  static_assert(CheckSerialType(Z_HARDWARE_SERIAL));
+  static_assert(CheckSerialType(Z_HARDWARE_SERIAL), "Z_HARDWARE_SERIAL must be defined in the form MSerialX, rather than SerialX.");
 #endif
 #if AXIS_HAS_HW_SERIAL(Z2)
-  static_assert(CheckSerialType(Z2_HARDWARE_SERIAL));
+  static_assert(CheckSerialType(Z2_HARDWARE_SERIAL), "Z2_HARDWARE_SERIAL must be defined in the form MSerialX, rather than SerialX.");
 #endif
 #if AXIS_HAS_HW_SERIAL(Z3)
-  static_assert(CheckSerialType(Z3_HARDWARE_SERIAL));
+  static_assert(CheckSerialType(Z3_HARDWARE_SERIAL), "Z3_HARDWARE_SERIAL must be defined in the form MSerialX, rather than SerialX.");
 #endif
 #if AXIS_HAS_HW_SERIAL(Z4)
-  static_assert(CheckSerialType(Z4_HARDWARE_SERIAL));
+  static_assert(CheckSerialType(Z4_HARDWARE_SERIAL), "Z4_HARDWARE_SERIAL must be defined in the form MSerialX, rather than SerialX.");
 #endif
 #if AXIS_HAS_HW_SERIAL(E0)
-  static_assert(CheckSerialType(E0_HARDWARE_SERIAL));
+  static_assert(CheckSerialType(E0_HARDWARE_SERIAL), "E0_HARDWARE_SERIAL must be defined in the form MSerialX, rather than SerialX.");
 #endif
 #if AXIS_HAS_HW_SERIAL(E1)
-  static_assert(CheckSerialType(E1_HARDWARE_SERIAL));
+  static_assert(CheckSerialType(E1_HARDWARE_SERIAL), "E1_HARDWARE_SERIAL must be defined in the form MSerialX, rather than SerialX.");
 #endif
 #if AXIS_HAS_HW_SERIAL(E2)
-  static_assert(CheckSerialType(E2_HARDWARE_SERIAL));
+  static_assert(CheckSerialType(E2_HARDWARE_SERIAL), "E2_HARDWARE_SERIAL must be defined in the form MSerialX, rather than SerialX.");
 #endif
 #if AXIS_HAS_HW_SERIAL(E3)
-  static_assert(CheckSerialType(E3_HARDWARE_SERIAL));
+  static_assert(CheckSerialType(E3_HARDWARE_SERIAL), "E3_HARDWARE_SERIAL must be defined in the form MSerialX, rather than SerialX.");
 #endif
 #if AXIS_HAS_HW_SERIAL(E4)
-  static_assert(CheckSerialType(E4_HARDWARE_SERIAL));
+  static_assert(CheckSerialType(E4_HARDWARE_SERIAL), "E4_HARDWARE_SERIAL must be defined in the form MSerialX, rather than SerialX.");
 #endif
 #if AXIS_HAS_HW_SERIAL(E5)
-  static_assert(CheckSerialType(E5_HARDWARE_SERIAL));
+  static_assert(CheckSerialType(E5_HARDWARE_SERIAL), "E5_HARDWARE_SERIAL must be defined in the form MSerialX, rather than SerialX.");
 #endif
 #if AXIS_HAS_HW_SERIAL(E6)
-  static_assert(CheckSerialType(E6_HARDWARE_SERIAL));
+  static_assert(CheckSerialType(E6_HARDWARE_SERIAL), "E6_HARDWARE_SERIAL must be defined in the form MSerialX, rather than SerialX.");
 #endif
 #if AXIS_HAS_HW_SERIAL(E7)
-  static_assert(CheckSerialType(E7_HARDWARE_SERIAL));
+  static_assert(CheckSerialType(E7_HARDWARE_SERIAL), "E7_HARDWARE_SERIAL must be defined in the form MSerialX, rather than SerialX.");
 #endif
 
 #endif // __STM32F1__
