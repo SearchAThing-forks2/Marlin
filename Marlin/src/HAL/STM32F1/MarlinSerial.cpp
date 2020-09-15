@@ -89,20 +89,18 @@ static inline __always_inline void my_usart_irq(ring_buffer *rb, ring_buffer *wb
     my_usart_irq(UART##n->rb, UART##n->wb, UART##n##_BASE, MSerial##n); \
   }
 
-#if HAS_MSERIAL(1)
-  DEFINE_HWSERIAL_MARLIN(MSerial1, 1);
+// Instantiate all UARTs even if they are not needed
+// This avoids a bunch of logic to figure out every serial
+// port which may be in use on the system.
+DEFINE_HWSERIAL_MARLIN(MSerial1, 1);
+DEFINE_HWSERIAL_MARLIN(MSerial2, 2);
+DEFINE_HWSERIAL_MARLIN(MSerial3, 3);
+DEFINE_HWSERIAL_UART_MARLIN(MSerial4, 4);
+DEFINE_HWSERIAL_UART_MARLIN(MSerial5, 5);
 #endif
-#if HAS_MSERIAL(2)
-  DEFINE_HWSERIAL_MARLIN(MSerial2, 2);
 #endif
-#if HAS_MSERIAL(3)
-  DEFINE_HWSERIAL_MARLIN(MSerial3, 3);
 #endif
-#if HAS_MSERIAL(4)
-  DEFINE_HWSERIAL_UART_MARLIN(MSerial4, 4);
 #endif
-#if HAS_MSERIAL(5)
-  DEFINE_HWSERIAL_UART_MARLIN(MSerial5, 5);
 #endif
 
 #endif // __STM32F1__

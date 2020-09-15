@@ -58,20 +58,10 @@ public:
   #endif
 };
 
-#define HAS_MSERIAL(X) (SERIAL_PORT == X || SERIAL_PORT_2 == X || DGUS_SERIAL_PORT == X || MALYAN_LCD_SERIAL_PORT == X)
+//#define HAS_MSERIAL(X) (SERIAL_PORT == X || SERIAL_PORT_2 == X || DGUS_SERIAL_PORT == X || MALYAN_LCD_SERIAL_PORT == X)
 
-#if HAS_MSERIAL(1)
-  extern MarlinSerial MSerial1;
-#endif  
-#if HAS_MSERIAL(2)
-  extern MarlinSerial MSerial2;
-#endif  
-#if HAS_MSERIAL(3)
-  extern MarlinSerial MSerial3;
-#endif  
-#if HAS_MSERIAL(4)
-  extern MarlinSerial MSerial4;
-#endif  
-#if HAS_MSERIAL(5)
-  extern MarlinSerial MSerial5;
-#endif  
+extern MarlinSerial MSerial1;
+extern MarlinSerial MSerial2;
+extern MarlinSerial MSerial3;
+extern MarlinSerial MSerial4;
+extern MarlinSerial MSerial5;
