@@ -86,7 +86,7 @@ static inline __always_inline void my_usart_irq(ring_buffer *rb, ring_buffer *wb
             BOARD_USART##n##_TX_PIN,         \
             BOARD_USART##n##_RX_PIN);        \
   extern "C" void __irq_usart##n(void) {     \
-    my_usart_irq(USART##n->rb, USART##n->wb, USART##n##_BASE, MSerial##n); \
+    my_usart_irq(UART##n->rb, UART##n->wb, UART##n##_BASE, MSerial##n); \
   }
 
 #if HAS_MSERIAL(1)
