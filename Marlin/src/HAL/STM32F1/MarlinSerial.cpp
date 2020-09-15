@@ -95,8 +95,11 @@ static inline __always_inline void my_usart_irq(ring_buffer *rb, ring_buffer *wb
 DEFINE_HWSERIAL_MARLIN(MSerial1, 1);
 DEFINE_HWSERIAL_MARLIN(MSerial2, 2);
 DEFINE_HWSERIAL_MARLIN(MSerial3, 3);
-DEFINE_HWSERIAL_UART_MARLIN(MSerial4, 4);
-DEFINE_HWSERIAL_UART_MARLIN(MSerial5, 5);
+
+#if defined(STM32_HIGH_DENSITY) || defined(STM32_XL_DENSITY)
+  DEFINE_HWSERIAL_UART_MARLIN(MSerial4, 4);
+  DEFINE_HWSERIAL_UART_MARLIN(MSerial5, 5);
+#endif
 #endif
 #endif
 #endif

@@ -71,15 +71,22 @@
 #define _MSERIAL(X) MSerial##X
 #define MSERIAL(X) _MSERIAL(X)
 
+#if defined(STM32_HIGH_DENSITY) || defined(STM32_XL_DENSITY)
+  #define NUM_UARTS 5
+#else
+  #define NUM_UARTS 3
+#endif
 
 #if SERIAL_PORT == 0
   #error "SERIAL_PORT cannot be 0. (Port 0 does not exist.) Please update your configuration."
 #elif SERIAL_PORT == -1
   #define MYSERIAL0 UsbSerial
-#elif WITHIN(SERIAL_PORT, 1, 5)
+#elif WITHIN(SERIAL_PORT, 1, NUM_UARTS)
   #define MYSERIAL0 MSERIAL(SERIAL_PORT)
-#else
+#elif defined(STM32_HIGH_DENSITY) || defined(STM32_XL_DENSITY)
   #error "SERIAL_PORT must be from -1 to 5. Please update your configuration."
+#else
+  #error "SERIAL_PORT must be from -1 to 3. Please update your configuration."
 #endif
 
 #ifdef SERIAL_PORT_2
@@ -89,10 +96,12 @@
     #error "SERIAL_PORT_2 must be different than SERIAL_PORT. Please update your configuration."
   #elif SERIAL_PORT_2 == -1
     #define MYSERIAL1 UsbSerial
-  #elif WITHIN(SERIAL_PORT_2, 1, 5)
+  #elif WITHIN(SERIAL_PORT_2, 1, NUM_UARTS)
     #define MYSERIAL1 MSERIAL(SERIAL_PORT_2)
-  #else
+  #elif defined(STM32_HIGH_DENSITY) || defined(STM32_XL_DENSITY)
     #error "SERIAL_PORT_2 must be from -1 to 5. Please update your configuration."
+  #else
+    #error "SERIAL_PORT_2 must be from -1 to 3. Please update your configuration."
   #endif
   #define NUM_SERIAL 2
 #else
@@ -108,10 +117,12 @@
     #error "DGUS_SERIAL_PORT must be different than SERIAL_PORT_2. Please update your configuration."
   #elif DGUS_SERIAL_PORT == -1
     #define DGUS_SERIAL UsbSerial
-  #elif WITHIN(DGUS_SERIAL_PORT, 1, 5)
+  #elif WITHIN(DGUS_SERIAL_PORT, 1, NUM_UARTS)
     #define DGUS_SERIAL MSERIAL(DGUS_SERIAL_PORT)
+  #elif defined(STM32_HIGH_DENSITY) || defined(STM32_XL_DENSITY)
+    #error "DGUS_SERIAL must be from -1 to 5. Please update your configuration."
   #else
-    #error "DGUS_SERIAL_PORT must be from -1 to 5. Please update your configuration."
+    #error "DGUS_SERIAL must be from -1 to 3. Please update your configuration."
   #endif
 #endif
 
@@ -124,10 +135,12 @@
     #error "MALYAN_LCD_SERIAL_PORT must be different than SERIAL_PORT_2. Please update your configuration."
   #elif defined(DGUS_SERIAL) && MALYAN_LCD_SERIAL_PORT == DGUS_SERIAL_PORT
     #error "MALYAN_LCD_SERIAL_PORT must be different than DGUS_SERIAL_PORT. Please update your configuration."
-  #elif WITHIN(MALYAN_LCD_SERIAL_PORT, 1, 5)
+  #elif WITHIN(MALYAN_LCD_SERIAL_PORT, 1, NUM_UARTS)
     #define MALYAN_LCD_SERIAL MSERIAL(MALYAN_LCD_SERIAL_PORT)
-  #else
+  #elif defined(STM32_HIGH_DENSITY) || defined(STM32_XL_DENSITY)
     #error "MALYAN_LCD_SERIAL_PORT must be from -1 to 5. Please update your configuration."
+  #else
+    #error "MALYAN_LCD_SERIAL_PORT must be from -1 to 3. Please update your configuration."
   #endif
 #endif
 
